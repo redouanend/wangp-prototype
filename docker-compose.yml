@@ -1,0 +1,37 @@
+# WanGP sur la machine de prototypage (machine partagée) : un seul conteneur, nommé avec ton
+# identifiant pour ne jamais toucher à ceux des autres groupes. Voir README.md.
+name: ${COMPOSE_PROJECT_NAME:-wangp-userd}
+
+services:
+  wangp:
+    build:
+      context: .
+      args:
+        WANGP_REF: ${WANGP_REF:-main}
+        TORCH_VERSION: ${TORCH_VERSION:-2.6.0}
+        TORCH_CUDA: ${TORCH_CUDA:-cu124}
+        CUDA_IMAGE: ${CUDA_IMAGE:-nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04}
+        WITH_SAGE: ${WITH_SAGE:-1}
+        UID: ${HOST_UID:-1000}
+        GID: ${HOST_GID:-1000}
+    image: ${COMPOSE_PROJECT_NAME:-wangp-userd}:local
+    container_name: ${COMPOSE_PROJECT_NAME:-wangp-userd}
+    environment:
+      WANGP_PROFILE: ${WANGP_PROFILE:-4}
+      WANGP_ATTENTION: ${WANGP_ATTENTION:-sage}
+      WANGP_EXTRA_ARGS: ${WANGP_EXTRA_ARGS:-}
+    volumes:
+      - ${DATA_DIR:-./data}:/data
+    # Port ouvert seulement sur la machine (127.0.0.1) : on y accède par un tunnel SSH, jamais
+    # depuis le réseau, et il ne gêne pas les ports des autres groupes.
+    ports:
+      - "127.0.0.1:${WANGP_PORT:-7860}:7860"
+    shm_size: "8gb"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${GPU_ID:-0}"]
+              capabilities: [gpu]
+    restart: "no"
