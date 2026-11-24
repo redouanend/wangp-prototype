@@ -35,7 +35,7 @@ Si le GPU est une RTX 50xx, il faut CUDA 12.8 : dans `.env`, mets `CUDA_IMAGE=nv
 
 ```bash
 cd /var/datalake/home/userD
-git clone <url-de-ce-depot> wangp-prototype && cd wangp-prototype
+git clone https://github.com/redouanend/wangp-prototype.git && cd wangp-prototype
 cp .env.example .env
 nano .env        # COMPOSE_PROJECT_NAME, WANGP_PORT libre, GPU_ID, DATA_DIR, HOST_UID/GID, WANGP_PROFILE
 mkdir -p "$(grep ^DATA_DIR .env | cut -d= -f2)"
@@ -54,7 +54,7 @@ docker compose logs -f        # attendre « Running on http://0.0.0.0:7860 » (C
 Depuis ton ordinateur, ouvre un tunnel puis va sur http://localhost:7860 :
 
 ```bash
-ssh -L 7860:127.0.0.1:7860 userD@<machine-de-prototypage>
+ssh -L 7860:127.0.0.1:7860 userD@<adresse-de-la-machine>
 ```
 
 (Remplace le premier 7860 par un autre port si tu l'utilises déjà en local, et le second par `WANGP_PORT`.)
