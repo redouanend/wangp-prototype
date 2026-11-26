@@ -7,17 +7,19 @@ services:
     build:
       context: .
       args:
-        WANGP_REF: ${WANGP_REF:-main}
-        TORCH_VERSION: ${TORCH_VERSION:-2.6.0}
-        TORCH_CUDA: ${TORCH_CUDA:-cu124}
-        CUDA_IMAGE: ${CUDA_IMAGE:-nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04}
+        WANGP_REF: ${WANGP_REF:-72d5075}
+        TORCH_VERSION: ${TORCH_VERSION:-2.10.0}
+        TORCHVISION_VERSION: ${TORCHVISION_VERSION:-0.25.0}
+        TORCHAUDIO_VERSION: ${TORCHAUDIO_VERSION:-2.10.0}
+        TORCH_CUDA: ${TORCH_CUDA:-cu128}
+        CUDA_IMAGE: ${CUDA_IMAGE:-nvidia/cuda:12.8.1-cudnn-devel-ubuntu22.04}
         WITH_SAGE: ${WITH_SAGE:-1}
         UID: ${HOST_UID:-1000}
         GID: ${HOST_GID:-1000}
     image: ${COMPOSE_PROJECT_NAME:-wangp-userd}:local
     container_name: ${COMPOSE_PROJECT_NAME:-wangp-userd}
     environment:
-      WANGP_PROFILE: ${WANGP_PROFILE:-4}
+      WANGP_PROFILE: ${WANGP_PROFILE:-3}
       WANGP_ATTENTION: ${WANGP_ATTENTION:-sage}
       WANGP_EXTRA_ARGS: ${WANGP_EXTRA_ARGS:-}
     volumes:
