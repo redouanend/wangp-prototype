@@ -36,6 +36,12 @@ RUN python -m pip install --upgrade pip \
     && python -m pip install -r requirements.txt \
     && if [ "${WITH_SAGE}" = "1" ]; then python -m pip install sageattention==1.0.6; fi
 
+# En-têtes Python (Python.h) : Triton, utilisé par Sage Attention et les CUDA Graphs, compile un petit
+# module C au premier lancement et échoue sans eux (« gcc ... cuda_utils.c ... returned non-zero exit status 1 »).
+# Étape placée ici, après pip, pour ne pas réinstaller PyTorch lors d'une reconstruction.
+RUN apt-get update && apt-get install -y --no-install-recommends python3.10-dev build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
 # Utilisateur sans droits root, avec l'UID de l'hôte (fichiers de /data lisibles par toi).
 ARG UID=1000
 ARG GID=1000

@@ -106,5 +106,6 @@ rm -rf "$(grep ^DATA_DIR .env | cut -d= -f2)"   # modèles et vidéos : attentio
 - Erreur avec Sage Attention : mets `WANGP_ATTENTION=sdpa` dans `.env`, puis `docker compose up -d`.
 - Option `--listen` inconnue (version de WanGP différente) : `docker compose run --rm --entrypoint python wangp wgp.py --help` pour voir les options, puis adapte `scripts/entrypoint.sh`.
 - Manque de mémoire GPU : profil plus économe (`WANGP_PROFILE=4` ou `5`) ou modèle plus petit (Wan 2.2 5B).
+- Erreur `gcc ... cuda_utils.c ... returned non-zero exit status 1` à la première génération : en-têtes Python manquants pour Triton. Corrigé dans le Dockerfile (`python3.10-dev`) : `git pull && docker compose build && docker compose up -d`.
 - Erreur `no kernel image` ou `CUDA driver version is insufficient` : pilote trop ancien pour CUDA 12.8 (voir étape 1).
 - Plus de place : `du -sh "$DATA_DIR"/*` puis supprime les modèles inutiles dans `ckpts/`.
