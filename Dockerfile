@@ -1,15 +1,17 @@
 # WanGP (Wan2GP, deepbeepmeep) sur GPU NVIDIA, pour la machine de prototypage de l'EPF.
-# Versions conseillées par docs/INSTALLATION.md de WanGP : Python 3.10, PyTorch 2.6.0 + CUDA 12.4
-# (RTX 10xx à 40xx, A100, H100). Pour une RTX 50xx : TORCH_VERSION=2.7.0, TORCH_CUDA=cu128 et une
-# image de base CUDA 12.8 (voir README).
-ARG CUDA_IMAGE=nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
+# Mêmes versions que le Dockerfile officiel de WanGP (novembre 2026) : CUDA 12.8 + PyTorch 2.10.
+# Il faut un pilote NVIDIA 570 ou plus récent sur la machine (nvidia-smi). WanGP exige PyTorch 2.10
+# depuis que ses dépendances incluent torchcodec 0.10.
+ARG CUDA_IMAGE=nvidia/cuda:12.8.1-cudnn-devel-ubuntu22.04
 FROM ${CUDA_IMAGE}
 
 ARG WANGP_REPO=https://github.com/deepbeepmeep/Wan2GP.git
 # Commit ou tag de WanGP : fixe-le (README, « Figer la version ») pour que les mesures soient comparables.
-ARG WANGP_REF=main
-ARG TORCH_VERSION=2.6.0
-ARG TORCH_CUDA=cu124
+ARG WANGP_REF=72d5075
+ARG TORCH_VERSION=2.10.0
+ARG TORCHVISION_VERSION=0.25.0
+ARG TORCHAUDIO_VERSION=2.10.0
+ARG TORCH_CUDA=cu128
 # 1 = installe Sage Attention 1.0.6 (environ 30 % plus rapide d'après WanGP) ; 0 = attention sdpa.
 ARG WITH_SAGE=1
 
@@ -30,7 +32,7 @@ RUN git clone ${WANGP_REPO} wangp && cd wangp && git checkout ${WANGP_REF} && gi
 WORKDIR /opt/wangp
 
 RUN python -m pip install --upgrade pip \
-    && python -m pip install torch==${TORCH_VERSION} torchvision torchaudio --index-url https://download.pytorch.org/whl/${TORCH_CUDA} \
+    && python -m pip install torch==${TORCH_VERSION} torchvision==${TORCHVISION_VERSION} torchaudio==${TORCHAUDIO_VERSION} --index-url https://download.pytorch.org/whl/${TORCH_CUDA} \
     && python -m pip install -r requirements.txt \
     && if [ "${WITH_SAGE}" = "1" ]; then python -m pip install sageattention==1.0.6; fi
 
